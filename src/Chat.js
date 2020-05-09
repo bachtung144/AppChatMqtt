@@ -4,120 +4,159 @@ import {
   View,
   TextInput,
   FlatList,
+  Image,
+  StatusBar,
   TouchableOpacity,
 } from 'react-native';
 import MqttService from './core/services/MqttService';
-import Feather from 'react-native-vector-icons/dist/Feather';
+import AntDesign from 'react-native-vector-icons/dist/AntDesign';
+import {styleChatScreen} from './Style/StyleChatScreen';
 import OfflineNotification from './core/components/OfflineNotification';
-
+// id)name)url)mess
+const DataImage = [
+  {
+    id: 1,
+    pic: 'https://bom.to/ABg4gR',
+  },
+  {
+    id: 2,
+    pic: 'https://bom.to/ABg4gR',
+  },
+];
+function ItemImage({image}) {
+  return (
+    <View style={{marginHorizontal: 5}}>
+      <Image
+        source={{
+          uri: image,
+        }}
+        style={styleChatScreen.image}
+      />
+    </View>
+  );
+}
 export default class Chat extends React.Component {
-    state = {
-        isConnected: false,
-        message: '',
-        message_recive: '',
-        mess_list: [],
-    };
-    constructor() {
-        super();
-        this.id = 'id_' + parseInt(Math.random() * 100000);
-    }
-    componentDidMount(): void {
-        MqttService.connectClient(
-            this.mqttSuccessHandler,
-            this.mqttConnectionLostHandler,
-        );
-    }
+  state = {
+    isConnected: false,
+    message: '',
+    message_recive: '',
+    mess_list: [],
+    arrayName:[],
+    arrayAvt:[]
+  };
+  constructor(props) {
+    super(props);
+    this.id = 'id_' + parseInt(Math.random() * 100000);
+    const {navigation} = this.props;
+    this.Name = navigation.getParam('Name');
+    this.Image = navigation.getParam('Image');
+  }
+  componentDidMount(): void {
+    MqttService.connectClient(
+      this.mqttSuccessHandler,
+      this.mqttConnectionLostHandler,
+    );
+  }
 
-    onWORLD = message_recive => {
-        var joined = this.state.mess_list.concat(message_recive);
-        this.setState({mess_list: joined});
-        this.setState({
-            message_recive,
-        });
-    };
+  onWORLD = message_recive => {
+    var joined = this.state.mess_list.concat(message_recive);
+    this.setState({mess_list: joined});
+    // this.setState({
+    //   message_recive,
+    // });
+  };
 
-    mqttSuccessHandler = () => {
-        console.log('connected to mqtt');
-        MqttService.subscribe('WORLD', this.onWORLD);
-        this.setState({
-            isConnected: true,
-        });
-    };
+  mqttSuccessHandler = () => {
+    console.log('connected to mqtt');
+    MqttService.subscribe('WORLD', this.onWORLD);
+    this.setState({
+      isConnected: true,
+    });
+  };
 
-    mqttConnectionLostHandler = () => {
-        this.setState({
-            isConnected: false,
-        });
-    };
+  mqttConnectionLostHandler = () => {
+    this.setState({
+      isConnected: false,
+    });
+  };
 
-    onPublish = () => {
-        var term = this.id + ':' + this.state.message;
-        MqttService.publishMessage('WORLD', term);
-    };
+  onPublish = () => {
+    var term = this.id + ')' + this.Name + ')' +this.Image+')' + this.state.message;
+    MqttService.publishMessage('WORLD', term);
+  };
 
-  renderRow = ({item}) => {
-      let idMessage = item.split(':');
+  RenderRow = ({item}) => {
+    let idMessage = item.split(')');
     return (
-        <View style={{
-            flexDirection:'row',
-            justifyContent:idMessage[0] === this.id?'flex-end':'flex-start',
-            marginVertical: 5,
-            marginLeft: idMessage[0] === this.id ? 60 : 10,
-            marginRight: idMessage[0] === this.id ? 10 : 60,
-        }}>
-            {idMessage[0] !== this.id ? <Text style={{marginTop:13,marginRight:10}}>
-                {idMessage[0]}
-                {/*id_1345*/}
-            </Text> : null}
       <View
-        style={{
-          backgroundColor:idMessage[0] === this.id ? '#66db30':'gray',
-          marginVertical: 5,
-          // marginLeft: idMessage[0] === this.id ? 60 : 10,
-          // marginRight: idMessage[0] === this.id ? 10 : 60,
-          borderRadius: 5,
-        }}>
+        style={[
+          styleChatScreen.ctnRender,
+          {justifyContent:  idMessage[0] === this.id ? 'flex-end' : 'flex-start'},
+        ]}>
+        { idMessage[0] === this.id ? (
+          <View />
+        ) : (
+          <View style={styleChatScreen.ctnAvt}>
+            <Image
+              source={{
+                uri: idMessage[2],
+              }}
+              style={styleChatScreen.imageRender}
+            />
+            <Text>
+              {idMessage[1]}
+            </Text>
+          </View>
+        )}
         <Text
-          style={{
-            color: 'white',
-            fontSize: 20,
-            marginVertical: 7,
-            marginHorizontal: 7,
-          }}>
-            {idMessage.length !== 1 ? idMessage[1] : idMessage[0]}
+          style={[
+            styleChatScreen.textRender,
+            {
+              color:  idMessage[0] === this.id ? '#FFF' : '#828a97',
+              backgroundColor:  idMessage[0] === this.id ? '#827dce' : '#d1dfe4',
+            },
+          ]}>
+          {idMessage[3]}
         </Text>
       </View>
-            {idMessage[0] === this.id ? <Text style={{marginTop:13,marginLeft:10}}>{idMessage[0]}</Text> : null}
-        </View>
     );
   };
   _keyExtractor = (item, index) => item + index;
   render() {
-      const {isConnected, mess_list,message} = this.state;
+    const {mess_list, message,isConnected} = this.state;
+
     return (
-      <View style={{flex: 1, flexDirection: 'column'}}>
-          {/*{!isConnected && <OfflineNotification />}*/}
+      <View style={styleChatScreen.container}>
+        {!isConnected && <OfflineNotification />}
+        <StatusBar backgroundColor="#7c77cd" />
+        <View style={styleChatScreen.containerHeader}>
+          <FlatList
+            style={styleChatScreen.flUser}
+            data={DataImage}
+            renderItem={({item}) => <ItemImage image={item.pic} />}
+            keyExtractor={item => item.id}
+            numColumns={3}
+          />
+        </View>
+        <View style={styleChatScreen.ctnNameUser}>
+          <Text style={styleChatScreen.txtName}>David, John, Blake</Text>
+        </View>
         <FlatList
           data={mess_list}
-          renderItem={this.renderRow}
+          renderItem={this.RenderRow}
+
           keyExtractor={this._keyExtractor}
-          extraData={this.state}
         />
-        <View style={{flexDirection: 'row', borderTopWidth: 0.5}}>
-          <TextInput style={{width: '85%'}}
-                     value={message}
-                     onChangeText={message => this.setState({message: message})}
+        <View style={styleChatScreen.ctnFooter}>
+          <AntDesign name={'plus'} style={styleChatScreen.iconPlus} />
+          <TextInput
+            placeholder={'Type something...'}
+            style={styleChatScreen.input}
+            value={message}
+            onChangeText={message => this.setState({message: message})}
           />
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#66db30',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '15%',
-            }}
-            onPress={this.onPublish}
-          >
-            <Feather name={'send'} size={30} color={'white'} />
+          <TouchableOpacity onPress={this.onPublish}>
+            <Text style={styleChatScreen.send}>Send</Text>
           </TouchableOpacity>
         </View>
       </View>

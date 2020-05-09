@@ -31,5 +31,13 @@ export const styleLogin = {
         alignItems: 'center',
         marginTop: 15,
     },
-    txtGray:{color: 'gray'}
+    txtGray:{color: 'gray'},
+    ctnButtonDis:{
+        backgroundColor: 'gray',
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+        borderRadius: 3,
+    }
 };

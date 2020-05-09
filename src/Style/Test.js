@@ -15,14 +15,14 @@ const Data = [
     name: 'tung 1',
     mess: 'dasffffffadgagagadgsdg',
     pic:
-      'https://i.pinimg.com/originals/e0/8e/78/e08e78ec865f6b185b82f98898420696.jpg',
+      'https://bom.to/ABg4gR',
   },
   {
     id: 2,
     name: 'tung 2',
     mess: 'affsagasgag',
     pic:
-      'https://i.pinimg.com/originals/e0/8e/78/e08e78ec865f6b185b82f98898420696.jpg',
+      'https://bom.to/ABg4gR',
   },
 ];
 
@@ -30,12 +30,12 @@ const DataImage = [
   {
     id: 1,
     pic:
-      'https://i.pinimg.com/originals/e0/8e/78/e08e78ec865f6b185b82f98898420696.jpg',
+      'https://bom.to/ABg4gR',
   },
   {
     id: 2,
     pic:
-      'https://i.pinimg.com/originals/e0/8e/78/e08e78ec865f6b185b82f98898420696.jpg',
+      'https://bom.to/ABg4gR',
   },
 ];
 function Item({image}) {

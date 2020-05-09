@@ -6,7 +6,7 @@ import {createAppContainer} from 'react-navigation';
 import Test from './src/Style/Test';
 const StackRoot = createStackNavigator({
   LoginScreen :{screen:Login},
-  ChatScreen : {screen:Test,
+  ChatScreen : {screen:Chat,
     navigationOptions:{headerShown: false}
   }
 });
